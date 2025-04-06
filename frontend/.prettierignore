@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+dist
+build
+.coverage
+.next
+out
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Local Development
+.env
+.env.local
+.vscode
+.idea
+
+# Logs
+*.log
+logs
+
+# Special Files
+*.md
+*.svg
+*.json
+*.yml
+*.html

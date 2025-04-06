@@ -1,0 +1,39 @@
+{
+  "name": "wild-media-server",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+    "format": "prettier --write .",
+    "clean-install": "npx rimraf node_modules package-lock.json && npm install"
+  },
+  "dependencies": {
+    "@videojs/themes": "^1.0.0",
+    "axios": "^1.8.4",
+    "video.js": "^7.21.7",
+    "vue": "^3.4.21",
+    "vue-i18n": "^9.2.2",
+    "vue-router": "^4.3.0",
+    "vue-video-player": "^6.0.0",
+    "vuetify": "^3.4.0",
+    "vuex": "^4.1.0",
+    "wild-media-server": "file:"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
+    "@vue/eslint-config-prettier": "^8.0.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "postcss": "^8.4.38",
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
+    "sass": "^1.71.0",
+    "vite": "^5.1.4"
+  },
+  "overrides": {
+    "nth-check": "^2.1.1",
+    "css-select": "^5.1.0"
+  }
+}

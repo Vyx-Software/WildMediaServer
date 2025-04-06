@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2E7D32">
+  <meta name="description" content="WildMediaServer - Self-hosted media streaming solution">
+  <title>WildMediaServer</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/src/assets/styles/main.scss" as="style">
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css" as="style">
+  
+  <!-- CSS Variables for theme -->
+  <style>
+    :root {
+      --primary-color: #2E7D32;
+      --secondary-color: #81C784;
+      --background-dark: #1B1B1B;
+      --background-light: #FFFFFF;
+      --text-primary: #FFFFFF;
+      --text-secondary: #000000;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="loading-screen">
+      <div class="loading-spinner"></div>
+      <p>Loading WildMediaServer...</p>
+    </div>
+  </div>
+  
+  <!-- Fallback for non-JS browsers -->
+  <noscript>
+    <div class="noscript-warning">
+      <h1>JavaScript Required</h1>
+      <p>WildMediaServer requires JavaScript to function properly.</p>
+      <p>Please enable JavaScript in your browser settings.</p>
+    </div>
+  </noscript>
+</body>
+</html>
