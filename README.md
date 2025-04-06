@@ -1,147 +1,153 @@
 # WildMediaServer 🎬
 
-**Stream, Share, Enjoy** - Your Universal Media Server for Cross-Platform Entertainment
+**Python Media Server** - Vue.js Frontend with MySQL Backend
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/Vyx-Software/WildMediaServer/build.yml?style=flat-square&logo=github)](https://github.com/Vyx-Software/WildMediaServer/actions)
-[![License](https://img.shields.io/github/license/Vyx-Software/WildMediaServer?style=flat-square&logo=gnu)](LICENSE)
-[![Latest Release](https://img.shields.io/github/v/release/Vyx-Software/WildMediaServer?style=flat-square&logo=github)](https://github.com/Vyx-Software/WildMediaServer/releases)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue?logo=python)](https://python.org)
+[![Vue Version](https://img.shields.io/badge/vue-2.6%2B-green?logo=vue.js)](https://vuejs.org)
+[![MySQL Version](https://img.shields.io/badge/mysql-5.7%2B-orange?logo=mysql)](https://mysql.com)
 
-A high-performance media server designed to stream your movies, music, and photos to **any device**, anywhere. Built with cross-platform compatibility and modern streaming standards in mind.
+## 🚀 Core Architecture
 
----
-
-## 🚀 Features
-
-- **📺 Multi-Device Streaming**  
-  Cast to Smart TVs, game consoles, mobile devices, and browsers simultaneously.
-  
-- **⚡ On-the-Fly Transcoding**  
-  Automatic 4K/HDR/HEVC conversion with hardware acceleration support.
-
-- **🏠 DLNA/UPnP Integration**  
-  Seamless compatibility with home theater systems and IoT devices.
-
-- **📡 Live TV & DVR**  
-  IPTV support with pause/record functionality (requires compatible tuner).
-
-- **🌐 Modern Web UI**  
-  Responsive browser-based interface with dark/light themes.
-
----
+```mermaid
+graph TD
+    A[Vue.js Frontend] --> B[FastAPI]
+    B --> C[MySQL Database]
+    B --> D[FFmpeg]
+    B --> E[Celery Workers]
+    D --> F[(Media Files)]
+```
 
 ## 📦 Installation
 
-### Native Packages
-```bash
-# Debian/Ubuntu
-wget https://github.com/Vyx-Software/WildMediaServer/releases/download/vX.X.X/wildmediaserver_X.X.X_amd64.deb
-sudo dpkg -i wildmediaserver*.deb
+### Requirements
+- Python 3.10+
+- MySQL 5.7+
+- Node.js 16.x
+- FFmpeg 4.3+
 
-# RHEL/CentOS
-sudo yum install https://github.com/Vyx-Software/WildMediaServer/releases/download/vX.X.X/wildmediaserver-X.X.X-x86_64.rpm
-```
-
-### Docker Deployment
-```docker
-docker run -d \
-  --name wildmediaserver \
-  -v /media:/server/media \
-  -v /config:/server/config \
-  -p 5001:5001 \
-  -p 1900:1900/udp \
-  --device /dev/dri:/dev/dri \
-  vyxsoftware/wildmediaserver:latest
-```
-
-### Building from Source
 ```bash
 git clone https://github.com/Vyx-Software/WildMediaServer.git
 cd WildMediaServer
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j$(nproc)
-sudo make install
+
+# Python backend
+pip install -r requirements.txt
+
+# Vue frontend
+cd frontend
+npm install
 ```
 
----
+## ⚙️ Configuration
 
-## 🖥️ Configuration
-
-### Server Settings (`/etc/wildmediaserver.conf`)
+1. Create `.env` file:
 ```ini
-[network]
-port = 5001
-interface = eth0
+# Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=wildmedia
+DB_USER=media_user
+DB_PASSWORD=secure_pass123
 
-[transcoding]
-threads = auto
-hw_accel = vaapi
-max_bitrate = 150M
-
-[library]
-auto_scan = true
-scan_interval = 3600
+# Media
+MEDIA_PATH=/path/to/your/media
+TRANSCODE_DIR=/tmp/wildmedia_transcodes
 ```
 
-### Hardware Acceleration
+2. Initialize MySQL:
+```sql
+CREATE DATABASE wildmedia;
+CREATE USER 'media_user'@'localhost' IDENTIFIED BY 'secure_pass123';
+GRANT ALL PRIVILEGES ON wildmedia.* TO 'media_user'@'localhost';
+```
+
+## 🖥️ Running
+
 ```bash
-# Verify VAAPI support
-vainfo
+# Start backend
+uvicorn app.main:app --host 0.0.0.0 --port 8000
 
-# NVIDIA GPU users
-docker run ... --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=all
+# Start frontend (separate terminal)
+cd frontend
+npm run serve
 ```
 
----
+## 🔧 Database Schema
 
-## 📱 Supported Protocols & Formats
+Key tables:
+```sql
+CREATE TABLE media (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    file_path VARCHAR(255) UNIQUE,
+    media_type ENUM('movie', 'tv', 'music'),
+    duration INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-| Category        | Supported Standards                          |
-|-----------------|----------------------------------------------|
-| **Video**       | H.264, HEVC, VP9, AV1 (decode)               |
-| **Audio**       | FLAC, Opus, Dolby Atmos, DTS-HD MA           |
-| **Containers**  | MKV, MP4, TS, WebM                           |
-| **Streaming**   | HLS, MPEG-DASH, RTSP, RTP                    |
-| **Metadata**    | XML, JSON-LD, embedded tags                  |
-
----
-
-## 🛠 Development
-
-### Tech Stack
-- **Core**: C++20 (ASIO/Boost for networking)
-- **Web Interface**: React 18 + TypeScript
-- **Media Engine**: FFmpeg 6.x + libav*
-- **Packaging**: CPack, Docker, AppImage
-
-### Contribution Workflow
-```bash
-# Set up development environment
-git clone --recurse-submodules https://github.com/Vyx-Software/WildMediaServer.git
-cd WildMediaServer
-conan install . --output-folder=build --build=missing
-cd build && cmake .. -DCMAKE_MODULE_PATH=$(pwd)
-cmake --build . --target WildMediaServer
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE,
+    password_hash VARCHAR(128),
+    last_login DATETIME
+);
 ```
 
----
+## 🐳 Docker Setup
 
-## 📜 License
+```docker-compose
+version: '3.8'
 
-```text
-GNU GENERAL PUBLIC LICENSE Version 3
-Copyright (C) 2023 Vyx-Software
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: wildmedia
+      MYSQL_USER: media_user
+      MYSQL_PASSWORD: secure_pass123
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - mysql_data:/var/lib/mysql
 
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it
-under certain conditions. See LICENSE file for details.
+  backend:
+    build: .
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=wildmedia
+      - DB_USER=media_user
+      - DB_PASSWORD=secure_pass123
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
 ```
 
----
+## 📜 Contribution Rules
 
-> **Note**  
-> For hardware transcoding support, ensure your system meets the  
-> [requirements](https://github.com/Vyx-Software/WildMediaServer/wiki/Hardware-Acceleration).  
-> 
-> Found an issue? [Report it here](https://github.com/Vyx-Software/WildMediaServer/issues/new/choose)  
-> Want to contribute? Read our [style guide](CONTRIBUTING.md#code-style) first
+1. **Performance First**  
+   All PRs must include:
+   - Memory usage metrics (`/api/debug/memory`)
+   - CPU load during stress tests
+   - Query execution times for DB operations
+
+2. **Feature Requirements**  
+   ```python
+   # Example feature validation
+   if not (feature.originality_score >= 8 and 
+           feature.performance_impact <= 0.5 and
+           feature.user_demand >= 50):
+       reject_feature()
+   ```
+
+3. **Testing Mandatory**  
+   ```bash
+   # Run validation suite
+   pytest tests/ --benchmark-sort=name --benchmark-min-rounds=5
+   ```
+
+## 📚 Documentation
+- [API Reference](docs/API.md)
+- [Admin Guide](docs/ADMIN.md)
+- [Performance Metrics](docs/PERFORMANCE.md)
